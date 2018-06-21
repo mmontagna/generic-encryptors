@@ -29,7 +29,7 @@ setup(
       'Programming Language :: Python :: 3',
       'Programming Language :: Python :: 3.6',
   ),
-  package_data={'': ['LICENSE']},
+  package_data={'': ['LICENSE', 'VERSION']},
   include_package_data=True,
   python_requires=">=2.7",
   license=open('LICENSE').read(),
