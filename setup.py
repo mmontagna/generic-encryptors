@@ -29,13 +29,13 @@ setup(
       'Programming Language :: Python :: 3',
       'Programming Language :: Python :: 3.6',
   ),
-  package_data={'generic_encryptors': ['LICENSE', 'VERSION']},
+  data_files = [('', ['LICENSE', 'VERSION'])],
   include_package_data=True,
   python_requires=">=2.7",
-  license=open('LICENSE').read(),
+  license=open(os.path.join(dir_path, 'LICENSE')).read(),
   install_requires=[
     "cryptography~=2.2.0",
-    "generic-encoders~=0.3.0"
+    "generic-encoders==0.3.2"
   ],
   entry_points = {
 
