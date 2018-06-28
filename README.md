@@ -2,4 +2,60 @@
 
 # Generic encryptors
 
-A set of encryptors which provide an interface compatible with https://github.com/mmontagna/generic-encoders
+A set of encryptors which provide an interface compatible with https://github.com/mmontagna/generic-encoders currently only AES is supported. 
+
+## Installation
+
+```
+$ pip install generic-encoders
+```
+
+## Usage 
+
+### Basic Example
+```
+>>> import os
+>>> from generic_encryptors import AesEncryptor
+>>> 
+>>> key = os.urandom(32)
+>>> encryptor = AesEncryptor(key=key)
+>>> encryptor.encode('My secret data')
+"\x10\x00\x00\x00\xe98\xabw\xb0?Kg\x8d2\x97=j\xed\xcfM \x00\x00\x00'awM\x04)\x13\xaf\x8a\xa9\xd6\xf7A\xf8\xf0\xa9\x1e\x81yG\x95q\x14\n\xb7\x8b'\x94`\x7f;q8\xb4\xc4\x1e\xb3\xcf{\xea8\xfd\xe5\x95\xa2\xb8\xc9\x04"
+>>> encryptor.decode(encryptor.encode('My secret data'))
+'My secret data'
+```
+
+
+## Supported Encoders
+
+* [aes](#aes-encryptor)
+
+
+### AES Encryptor
+
+The AES encryptor encrypts data via the AES algorithm more info here: https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
+
+It generates a new Initializatio Vector (IV) for every call to encrypt and prepends the IV to each encrypted output, subsequent calls to decrypt read the IV from the output.
+
+This encryptor also generates a hmac on every call to encrypt and inserts the hmac into the output, calls to decrypt then verify the hmac signature is valid. See https://docs.python.org/2/library/hmac.html for more info.
+
+The format of the output is:
+int - length of IV
+string - Initialization Vector
+int - lenght of HMAC
+string - HMAC
+string - encrypted data.
+
+Example:
+
+```
+>>> import os
+>>> from generic_encryptors import AesEncryptor
+>>> 
+>>> key = os.urandom(32)
+>>> encryptor = AesEncryptor(key=key)
+>>> encryptor.encode('My secret data')
+"\x10\x00\x00\x00\xe98\xabw\xb0?Kg\x8d2\x97=j\xed\xcfM \x00\x00\x00'awM\x04)\x13\xaf\x8a\xa9\xd6\xf7A\xf8\xf0\xa9\x1e\x81yG\x95q\x14\n\xb7\x8b'\x94`\x7f;q8\xb4\xc4\x1e\xb3\xcf{\xea8\xfd\xe5\x95\xa2\xb8\xc9\x04"
+>>> encryptor.decode(encryptor.encode('My secret data'))
+'My secret data'
+```
