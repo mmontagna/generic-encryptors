@@ -14,7 +14,7 @@ class AesEncryptor(Encoder):
   inputs = [six.binary_type]
   outputs = six.binary_type
   
-  def __init__(self, key, keykey_size=256):
+  def __init__(self, key):
     self.key = key
     super(AesEncryptor, self)
 
