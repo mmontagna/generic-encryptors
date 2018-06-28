@@ -25,6 +25,28 @@ $ pip install generic-encoders
 'My secret data'
 ```
 
+### Combining Encryptors with other Encoders
+
+Encryptors and Encoders can be composed via the ComposedEncoder class see https://github.com/mmontagna/generic-encoders
+
+```
+>>> import os
+>>> from generic_encoders import ComposedEncoder, MsgPackEncoder, Lz4Encoder, Base64Encoder, TextEncoder
+>>> from generic_encryptors import AesEncryptor
+>>> 
+>>> encoder = ComposedEncoder(MsgPackEncoder(), Lz4Encoder(), AesEncryptor(key=os.urandom(32)), Base64Encoder())
+>>> 
+>>> encoder.encode("Secret")
+'EAAAAPbD4YUBYQs2g4sS9R4Py0sgAAAAo0NjO5OyJHvELhGZ6Wj4WkISA6BuB/mjuw7GeSpjGqCj4E5A3UHmbmCfvaLKcx5i0jDc/Gi3yCpLQ3Wd5y9etg=='
+>>> 
+>>> encoder.decode(encoder.encode("Secret"))
+'Secret'
+
+```
+
+If an encoder is not capable of accepting the output/input of a parent encoder an EncoderLinkError exception will be raised. 
+
+
 
 ## Supported Encoders
 
