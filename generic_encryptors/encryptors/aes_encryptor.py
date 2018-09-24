@@ -22,13 +22,13 @@ class AesEncryptor(Encoder):
 
   def _encode(self, data):
     iv = os.urandom(16)
-    self.iv = iv
-    self.cipher = Cipher(
+    iv = iv
+    cipher = Cipher(
       algorithms.AES(self.key),
       modes.CBC(iv),
       backend=default_backend())
-    encryptor = self.cipher.encryptor()
-    padder = padding.PKCS7(self.cipher.algorithm.block_size).padder()
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(cipher.algorithm.block_size).padder()
     padded_data = padder.update(data) + padder.finalize()
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
     hmac_data = hmac.new(encrypted_data, self.key, hashlib.sha256).digest()
@@ -54,7 +54,7 @@ class AesEncryptor(Encoder):
       modes.CBC(iv),
       backend=default_backend())
     decryptor = cipher.decryptor()
-    unpadder = padding.PKCS7(self.cipher.algorithm.block_size).unpadder()
+    unpadder = padding.PKCS7(cipher.algorithm.block_size).unpadder()
     data = decryptor.update(data) + decryptor.finalize()
     return unpadder.update(data) + unpadder.finalize()
     
