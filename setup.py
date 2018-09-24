@@ -35,7 +35,7 @@ setup(
   license=open(os.path.join(dir_path, 'LICENSE')).read(),
   install_requires=[
     "cryptography~=2.3.0",
-    "generic-encoders==0.3.2"
+    "generic-encoders<1.0"
   ],
   entry_points = {
 
