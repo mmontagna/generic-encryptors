@@ -5,9 +5,11 @@ import hashlib
 import struct
 
 from generic_encoders import Encoder
+from .exceptions import HmacMissMatch
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
+
 
 class AesEncryptor(Encoder):
   file_suffixes = ['aes']
@@ -42,8 +44,11 @@ class AesEncryptor(Encoder):
     iv_length = struct.unpack('i', data[0:4])[0]
     iv = data[4 : iv_length + 4]
     hmac_length = struct.unpack('i', data[iv_length + 4: iv_length + 8])[0]
-    hmac_data = data[iv_length + 8: iv_length + 8 + hmac_length]
+    hmac_recieved = data[iv_length + 8: iv_length + 8 + hmac_length]
     data = data[iv_length + 8 + hmac_length:]
+    hmac_calculated = hmac.new(data, self.key, hashlib.sha256).digest()
+    if not hmac.compare_digest(hmac_calculated, hmac_recieved):
+      raise HmacMissMatch()
     cipher = Cipher(
       algorithms.AES(self.key),
       modes.CBC(iv),
