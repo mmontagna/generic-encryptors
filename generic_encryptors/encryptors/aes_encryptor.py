@@ -5,9 +5,11 @@ import hashlib
 import struct
 
 from generic_encoders import Encoder
+from generic_encryptors.encryptors.exceptions import HmacMissMatch
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
+
 
 class AesEncryptor(Encoder):
   file_suffixes = ['aes']
@@ -20,13 +22,13 @@ class AesEncryptor(Encoder):
 
   def _encode(self, data):
     iv = os.urandom(16)
-    self.iv = iv
-    self.cipher = Cipher(
+    iv = iv
+    cipher = Cipher(
       algorithms.AES(self.key),
       modes.CBC(iv),
       backend=default_backend())
-    encryptor = self.cipher.encryptor()
-    padder = padding.PKCS7(self.cipher.algorithm.block_size).padder()
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(cipher.algorithm.block_size).padder()
     padded_data = padder.update(data) + padder.finalize()
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
     hmac_data = hmac.new(encrypted_data, self.key, hashlib.sha256).digest()
@@ -42,14 +44,17 @@ class AesEncryptor(Encoder):
     iv_length = struct.unpack('i', data[0:4])[0]
     iv = data[4 : iv_length + 4]
     hmac_length = struct.unpack('i', data[iv_length + 4: iv_length + 8])[0]
-    hmac_data = data[iv_length + 8: iv_length + 8 + hmac_length]
+    hmac_received = data[iv_length + 8: iv_length + 8 + hmac_length]
     data = data[iv_length + 8 + hmac_length:]
+    hmac_calculated = hmac.new(data, self.key, hashlib.sha256).digest()
+    if not hmac.compare_digest(hmac_calculated, hmac_received):
+      raise HmacMissMatch()
     cipher = Cipher(
       algorithms.AES(self.key),
       modes.CBC(iv),
       backend=default_backend())
     decryptor = cipher.decryptor()
-    unpadder = padding.PKCS7(self.cipher.algorithm.block_size).unpadder()
+    unpadder = padding.PKCS7(cipher.algorithm.block_size).unpadder()
     data = decryptor.update(data) + decryptor.finalize()
     return unpadder.update(data) + unpadder.finalize()
     

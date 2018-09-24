@@ -34,7 +34,7 @@ setup(
   python_requires=">=2.7",
   license=open(os.path.join(dir_path, 'LICENSE')).read(),
   install_requires=[
-    "cryptography~=2.2.0",
+    "cryptography~=2.3.0",
     "generic-encoders==0.3.2"
   ],
   entry_points = {
