@@ -12,8 +12,6 @@ setup(
   description = '''
   A set of encryptors which provide an interface compatible with https://github.com/mmontagna/generic-encoders
   ''',
-  long_description=open('README.md').read(),
-  long_description_content_type='text/markdown',
   author = 'Marco Montagna',
   author_email = 'marcojoemontagna@gmail.com',
   url = 'https://github.com/mmontagna/generic-encryptors',
